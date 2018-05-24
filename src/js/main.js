@@ -13,11 +13,16 @@ btnConvert.addEventListener('click', function() {
   divOutput.innerHTML = finalText;
 });
 
-function convertToDesiredHTML(str) {
-  //could also replace * with \times if that's necessary
-  str = str.replace(/\*/g, '\\times');
+//autoselect text when click on output div
+divOutput.addEventListener('focus', function() {
+  let range = document.createRange();
+  range.selectNodeContents(divOutput);
+  let sel = window.getSelection();
+  sel.removeAllRanges();
+  sel.addRange(range);
+})
 
-  //fractions are a bit annoying to work with, so... could search for /, then convert the () before and after into \dfrac{}{}
+function convertFractiontoLatex(str) {
   let slashIndex = str.indexOf('/');
   let counter = 0;
   while (slashIndex >= 0) {
@@ -40,7 +45,17 @@ function convertToDesiredHTML(str) {
     }
     slashIndex = str.indexOf('/');
   }
-  counter = 0;
+
+  return str;
+}
+
+function convertToDesiredHTML(str) {
+  //replace * with multiplication symbol:
+  str = str.replace(/\*/g, '\\times');
+
+  //fractions are a bit annoying to work with, so... could search for /, then convert the () before and after into \dfrac{}{}
+  //also handles basic fraction of just numbers/variable
+  str = convertFractiontoLatex(str);
 
   //do same thing for \sqrt so that you can just type sqrt() like normal?
     //^No, it becomes a mess when there are sqrts in fractions.  Just do \sqrt{} 
@@ -55,9 +70,16 @@ function convertToDesiredHTML(str) {
   //to convert each line of LaTeX into the appropriate HTML
   let arrayOfLines = str.split(/[\n\r]/g);
   arrayOfLines.forEach(function(string, index) {
-      //Also now show a preview of the LaTex:
-    latexPreview.innerHTML += katex.renderToString(string) + '<br>';
-    arrayOfLines[index] = '&lt;code class="redactor-katex" data-source="' + string + '"&gt;&lt;/code&gt;&lt;br&gt;';
+    if (string === '') {
+      //then it's just a blank line:
+      latexPreview.innerHTML += '<br>';
+      arrayOfLines[index] = '&lt;br&gt;';
+    }
+    else {
+      //show a preview of the displayed LaTeX and make the final HTML
+      latexPreview.innerHTML += katex.renderToString(string) + '<br>';
+      arrayOfLines[index] = '&lt;code class="redactor-katex" data-source="' + string + '"&gt;&lt;/code&gt;&lt;br&gt;';
+    }
   });
 
 
@@ -71,11 +93,13 @@ function convertToDesiredHTML(str) {
 4r^2 + 4r^2 = d^2
 8r^2 = d^2
 \\sqrt{8r^2} = \\sqrt{d^2}
-r\\sqrt{8} = d
-r\\sqrt{4 \\times 2} = d
-2r\\sqrt{2} = d
+r\\sqrt{4 * 2} = d
 2r\\sqrt{2} \\text{ vs. } \\dfrac{5r}{2}
+
 (5)/(63)
+distance = 5R * time
+
 (7x^2 + 20x - 10)/(50x^3 * -5 + \\sqrt{3})
+
 (\\sqrt{49 + x^2 * 2y})/(\\sqrt{13 + y})`;
 })();

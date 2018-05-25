@@ -109,11 +109,10 @@ function getRidOfItalics(string) {
       //just in case something unanticipated happens, kill the loop if it's run too much
       counter++;
       if (counter > 100) {
-        console.log('you stuck in infinite loop...');
+        console.log('You were stuck in infinite loop...');
         break;
       }
     }
-    console.log(counter);
   });
 
   return arrayOfLines.join('\n');

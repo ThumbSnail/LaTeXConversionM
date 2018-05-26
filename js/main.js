@@ -225,7 +225,7 @@ function convertToDesiredHTML(str) {
 //load up an example
 (function() {
   txtEntry.innerHTML = `\\text{UPDATED: Fraction entry easier, see notes}
-3/4 = x^2 / pi
+3/4 = (x)/(pi + x^2)
 (x^2 + \\sqrt{y^2 - 8} + 2/5) / (distance * time)
 
 (\\sqrt{49 + x^2 * 2y/x})/(\\sqrt{13 + y + 140%})

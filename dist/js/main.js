@@ -22,7 +22,51 @@ divOutput.addEventListener('focus', function() {
   sel.addRange(range);
 })
 
-function convertFractiontoLatex(str) {
+function convertBasicFractionToLatex(str) {
+  //for simple single-term fractions NOT enclosed with parentheses
+  let numeratorRegExp = /[a-zA-Z0-9%\^\\}{]+\s*\//g;
+
+  str = str.replace(numeratorRegExp, '\\dfrac{$&');
+
+  let denominatorRegExp = /\/\s*[a-zA-Z0-9%\^\\}{]+/g;
+
+  str = str.replace(denominatorRegExp, '/$&}');
+
+  //should be of the from \dfrac{stuff // stuff2}, so replace the two slashes with }{:
+  str = str.replace(/\s*\/\/\s*/g, '}{');
+
+  return str;
+}
+
+function convertComplicatedFractionToLatex(str) {
+  //for simple single-term fractions NOT enclosed with parentheses
+  let numeratorRegExp = /\(*.+\)*\s*\//g; //keep the opening parens in the match
+  //str = str.replace(numeratorRegExp, '\\dfrac{$&');  //don't include the opening parens in the match
+
+  //let numeratorRegExp = /(?<=\(*).+\)*\s*\//g;  //does not keep the opening left (
+  //str = str.replace(numeratorRegExp, '\\dfrac{$&');
+
+  str = str.replace(numeratorRegExp, function(match='$&') {
+    return '\\dfrac{' + match.replace(/^\(*/, '');  //get rid of the opening parentheses so that they're not displayed
+  });
+
+  let denominatorRegExp = /\/\s*\(*.+\)*/g;  //include the last parens
+  //let denominatorRegExp = /\/\s*\(*.+(?=\)*)/g;  //don't include the last paren in the match
+
+  //str = str.replace(denominatorRegExp, '/$&}');
+
+  str = str.replace(denominatorRegExp, function(match='$&') {
+    return '/' + match.replace(/\)*$/, '') + '}';   //get rid of closing parens in the string
+  });
+
+  //should be of the from \dfrac{stuff // stuff2}, so replace the two slashes with }{:
+  //str = str.replace(/\s*\/\/\s*/g, '}{');
+  str = str.replace(/\)*\s*\/\/\s*\(*/g, '}{');
+
+  return str;
+}
+
+function convertParenFractionToLatex(str) {
   let slashIndex = str.indexOf('/');
   let counter = 0;
   while (slashIndex >= 0) {
@@ -121,10 +165,22 @@ function getRidOfItalics(string) {
 function convertToDesiredHTML(str) {
   //replace * with multiplication symbol:
   str = str.replace(/\*/g, '\\times');
+  //replace % with the format LaTeX needs:
+  str = str.replace(/%/g, '\\%');
+  //replace pi with the format LaTeX needs:
+  str = str.replace(/pi/g, '\\pi');
+
+
+  //replace simple, one-term fractions via regexp:
+  str = convertBasicFractionToLatex(str);
+
+  //this one doesn't quite work how I'd want it to; introduces new complications
+  //str = convertComplicatedFractionToLatex(str);
 
   //fractions are a bit annoying to work with, so... could search for /, then convert the () before and after into \dfrac{}{}
-  //also handles basic fraction of just numbers/variable
-  str = convertFractiontoLatex(str);
+  str = convertParenFractionToLatex(str);
+  //^Could I replace this with a slightly altered version of my new basic regExp one?  Might be better.
+  //**Would certainly get rid of the infinite loop possibilities
 
   //do same thing for \sqrt so that you can just type sqrt() like normal?
     //^No, it becomes a mess when there are sqrts in fractions.  Just do \sqrt{} 
@@ -168,14 +224,12 @@ function convertToDesiredHTML(str) {
 
 //load up an example
 (function() {
-  txtEntry.innerHTML = `a^2 + b^2 = y
-\\sqrt{8r^2} = \\sqrt{d^2 * 4}
-2ab\\sqrt{2} vs. \\dfrac{5abc}{2d}
-distance = 5R * time
+  txtEntry.innerHTML = `\\text{UPDATED: Fraction entry easier, see notes}
+3/4 = x^2 / pi
+(x^2 + \\sqrt{y^2 - 8} + 2/5) / (distance * time)
 
-(\\sqrt{49 + x^2 * 2y})/(\\sqrt{13 + y})
+(\\sqrt{49 + x^2 * 2y/x})/(\\sqrt{13 + y + 140%})
 
-(5)/(63)
-multi word variable = \\pi
-\\text{multi word variable} = \\pi`;
+multi word variable = pi
+\\text{multi word variable} = pi`
 })();

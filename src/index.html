@@ -28,10 +28,12 @@
     <div id="features-container">
       <p class="bold">Features</p>
       <div id="features">
-        <p>1. Prints out the final HTML to just copy and paste (into the "HTML" view in the Explanation inferface) all lines using LaTeX at once instead of manually entering multiple LaTeX expressions one at a time through the Explanation interface.</p>
+        <p>0. Prints out the final HTML to just copy and paste (into the "HTML" view in the Explanation inferface) all lines using LaTeX at once instead of manually entering multiple LaTeX expressions one at a time through the Explanation interface.</p>
+        <p>1. Fractions (for the most part) should now be able to be entered like you would in an email.  One term in numerator/denominator no longer needs parens:  x^2/5.  Still need to wrap long terms in parens like normal:  (x^2 + 3) / (y - 1).  You can also now do "simple" fractions within fractions (which DO need parens) like:  (3/4)/(7/8).  Or inside long terms that already have parens: (3/5 + 4) / (x/8 + 2).  However, for something really messy with lots of parentheses, you'll have to use standard LaTeX.
         <p>2. Removes italicized text by wrapping all letters/words in \text{}.  If you want to keep the spaces in between multiple words like "multi word variable" then just manually place that inside of \text{}, like:  \text{multi word variable}</p>
         <p>3. Converts all * to \times</p>
-        <p>4. Simple fractions are a bit of a pain to type in LaTeX, so you can just do (whatever) / (whatever2), and it will convert it to \dfrac{whatever}{whatever2}, but you MUST wrap numerator and denominator in parentheses, even for something like (3)/(8). <strong>NOTE: This is NOT setup to handle fractions within fractions like ((3)/(5)) / ((7)/(8)).</strong> For that, you'll have to use normal LaTeX code.</p>
+        <p>4. Converts all % to \% (which is what LaTeX uses for that symbol)</p>
+        <p>5. Converts all pi to \pi</p>
         <p>(LaTeX already converts hyphens to the actual subtraction symbol, so no worries there.)
       </div>
     </div>

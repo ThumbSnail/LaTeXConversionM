@@ -24,11 +24,11 @@ divOutput.addEventListener('focus', function() {
 
 function convertBasicFractionToLatex(str) {
   //for simple single-term fractions NOT enclosed with parentheses
-  let numeratorRegExp = /[a-zA-Z0-9%\^\\}{]+\s*\//g;
+  let numeratorRegExp = /[a-zA-Z0-9%\.\^\\}{]+\s*\//g;
 
   str = str.replace(numeratorRegExp, '\\dfrac{$&');
 
-  let denominatorRegExp = /\/\s*[a-zA-Z0-9%\^\\}{]+/g;
+  let denominatorRegExp = /\/\s*[a-zA-Z0-9%\.\^\\}{]+/g;
 
   str = str.replace(denominatorRegExp, '/$&}');
 
@@ -214,7 +214,14 @@ function convertToDesiredHTML(str) {
     else {
       //show a preview of the displayed LaTeX and make the final HTML
       latexPreview.innerHTML += katex.renderToString(string) + '<br>';
-      arrayOfLines[index] = '&lt;code class="redactor-katex" data-source="' + string + '"&gt;&lt;/code&gt;&lt;br&gt;';
+
+      //if more than one line, add a break:
+      if (arrayOfLines.length > 1) {
+        arrayOfLines[index] = '&lt;code class="redactor-katex" data-source="' + string + '"&gt;&lt;/code&gt;&lt;br&gt;';
+      }
+      else {
+        arrayOfLines[index] = '&lt;code class="redactor-katex" data-source="' + string + '"&gt;&lt;/code&gt;';
+      }
     }
   });
 
